@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Carnation Bloom</title>
+<link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=EB+Garamond:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1c2b22;
+    --moss:#33473a;
+    --sage:#8fa896;
+    --paper:#eef1ea;
+    --petal:#f6f1e4;
+    --petal-shadow:#ddd6c4;
+    --gold:#c9a24b;
+  }
+  *{box-sizing:border-box;}
+  html,body{
+    margin:0;
+    height:100%;
+    overflow:hidden;
+    font-family:'EB Garamond', 'Georgia', serif;
+  }
+  .view{
+    position:fixed;
+    inset:0;
+    display:flex;
+    opacity:0;
+    pointer-events:none;
+    transition:opacity .9s ease;
+  }
+  .view.active{
+    opacity:1;
+    pointer-events:auto;
+  }
+
+  /* ---------- VIEW ONE: GARDEN ---------- */
+  #garden-view{
+    background:radial-gradient(ellipse at 50% 30%, #26382c 0%, var(--ink) 70%);
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+  }
+  .title{
+    position:absolute;
+    top:8%;
+    left:50%;
+    transform:translateX(-50%);
+    text-align:center;
+    color:var(--paper);
+    opacity:0;
+    animation:fadeIn 2s ease forwards 2.6s;
+  }
+  .title h1{
+    margin:0;
+    font-size:2.1rem;
+    letter-spacing:0.08em;
+    font-weight:400;
+    color:var(--petal);
+  }
+  .title p{
+    margin:.4rem 0 0;
+    font-size:.85rem;
+    letter-spacing:.3em;
+    text-transform:uppercase;
+    color:var(--sage);
+  }
+  @keyframes fadeIn{ to{opacity:1;} }
+
+  .garden{
+    position:relative;
+    display:flex;
+    align-items:flex-end;
+    justify-content:center;
+    gap:8vw;
+  }
+
+  .stem{
+    position:relative;
+    width:6px;
+    height:26vh;
+    background:linear-gradient(to top, var(--moss), var(--sage));
+    border-radius:3px;
+    transform-origin:bottom center;
+    animation:grow 1.6s cubic-bezier(.3,1,.4,1) forwards;
+  }
+
+  @keyframes grow{
+    from{ transform:scaleY(0); }
+    to{ transform:scaleY(1); }
+  }
+
+  .leaf{
+    position:absolute;
+    width:34px;
+    height:12px;
+    background:var(--moss);
+    border-radius:60% 0 60% 0;
+    opacity:0;
+    animation:leafIn .8s ease forwards;
+  }
+  .leaf.left{ left:-30px; transform:rotate(20deg); border-radius:0 60% 0 60%;}
+  .leaf.right{ right:-30px; transform:rotate(-20deg);}
+
+  @keyframes leafIn{
+    from{opacity:0; transform:scale(0) rotate(0);}
+    to{opacity:1;}
+  }
+
+  .flower{
+    position:absolute;
+    top:-24px;
+    left:50%;
+    transform:translateX(-50%) scale(1);
+    width:170px;
+    height:170px;
+  }
+
+  .petal{
+    position:absolute;
+    left:50%;
+    top:50%;
+    width:24px;
+    height:70px;
+    background:var(--petal);
+    border-radius:50% 50% 50% 50% / 60% 60% 40% 40%;
+    box-shadow:inset 0 -6px 8px -4px var(--petal-shadow);
+    transform-origin:50% 100%;
+    transform:translate(-50%,-100%) rotate(var(--rot)) scaleY(0);
+    animation:bloom 1.4s cubic-bezier(.2,1.1,.4,1) forwards;
+  }
+
+  @keyframes bloom{
+    0%{ transform:translate(-50%,-100%) rotate(var(--rot)) scaleY(0); }
+    70%{ transform:translate(-50%,-100%) rotate(var(--rot)) scaleY(1.08); }
+    100%{ transform:translate(-50%,-100%) rotate(var(--rot)) scaleY(1); }
+  }
+
+  .center{
+    position:absolute;
+    left:50%; top:50%;
+    width:32px; height:32px;
+    background:radial-gradient(circle at 40% 35%, #fffdf6, var(--gold) 140%);
+    border-radius:50%;
+    transform:translate(-50%,-50%) scale(0);
+    animation:centerIn .6s ease forwards;
+  }
+
+  @keyframes centerIn{
+    to{ transform:translate(-50%,-50%) scale(1); }
+  }
+
+  .petals-wrap{ position:absolute; inset:0; }
+
+  .cta{
+    position:absolute;
+    bottom:6%;
+    left:50%;
+    transform:translateX(-50%);
+    color:var(--sage);
+    text-decoration:none;
+    font-size:.95rem;
+    letter-spacing:.12em;
+    text-transform:uppercase;
+    padding:.7em 1.6em;
+    border:1px solid var(--sage);
+    border-radius:999px;
+    opacity:0;
+    animation:fadeIn 1.4s ease forwards 3.4s;
+    transition:color .3s, border-color .3s, background .3s;
+    cursor:pointer;
+    background:none;
+    font-family:inherit;
+  }
+  .cta:hover{
+    color:var(--ink);
+    background:var(--petal);
+    border-color:var(--petal);
+  }
+
+  /* ---------- VIEW TWO: LETTER ---------- */
+  #letter-view{
+    align-items:center;
+    justify-content:center;
+    background:#20211d;
+  }
+  .chessboard{
+    position:relative;
+    width:min(90vmin, 760px);
+    height:min(90vmin, 760px);
+    display:grid;
+    grid-template-columns:repeat(8,1fr);
+    grid-template-rows:repeat(8,1fr);
+    box-shadow:0 20px 60px rgba(0,0,0,.5);
+    border:10px solid #3a3a34;
+  }
+  .sq{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:clamp(18px, 3.6vmin, 40px);
+  }
+  .sq.light{ background:#e9e4d6; }
+  .sq.dark{ background:#7c8168; }
+  .piece.pb{ color:#2b2b28; text-shadow:0 1px 1px rgba(255,255,255,.15); }
+  .piece.pw{ color:#fdfcf6; text-shadow:0 1px 2px rgba(0,0,0,.4); }
+
+  .letter{
+    position:absolute;
+    z-index:2;
+    top:50%; left:50%;
+    transform:translate(-50%,-50%);
+    text-align:center;
+    max-width:70%;
+    padding:2rem 2.4rem;
+  }
+  .letter h1{
+    font-family:'Great Vibes', cursive;
+    font-weight:700;
+    font-size:3rem;
+    margin:0 0 1rem;
+    color:#fdfcf6;
+    text-shadow:0 2px 10px rgba(0,0,0,.6);
+  }
+  .letter p{
+    font-family:'Great Vibes', cursive;
+    font-size:1.9rem;
+    line-height:1.5;
+    margin:0;
+    color:#fdfcf6;
+    text-shadow:0 2px 10px rgba(0,0,0,.6);
+  }
+  .back{
+    position:absolute;
+    z-index:3;
+    bottom:5%;
+    left:50%;
+    transform:translateX(-50%);
+    color:#e9e4d6;
+    text-decoration:none;
+    font-family:'EB Garamond', serif;
+    letter-spacing:.15em;
+    text-transform:uppercase;
+    font-size:.8rem;
+    border-bottom:1px solid #e9e4d6;
+    padding-bottom:2px;
+    cursor:pointer;
+    background:none;
+    border-top:none;
+    border-left:none;
+    border-right:none;
+  }
+</style>
+</head>
+<body>
+
+<div class="view active" id="garden-view">
+  <div class="title">
+    <h1>White Carnations</h1>
+    <p>a quiet bloom</p>
+  </div>
+  <div class="garden" id="garden"></div>
+  <button class="cta" onclick="showView('letter-view')">Click on me</button>
+</div>
+
+<div class="view" id="letter-view">
+  <div class="chessboard" id="chessboard"></div>
+  <div class="letter">
+    <h1>Hi Srishti :)</h1>
+    <p>You already won when you had me fall for you, I call that a checkmate</p>
+  </div>
+  <button class="back" onclick="showView('garden-view')">back to the garden</button>
+</div>
+
+<script>
+function showView(id){
+  document.querySelectorAll('.view').forEach(v => {
+    v.classList.remove('active');
+    v.style.zIndex = 1;
+  });
+  const target = document.getElementById(id);
+  target.style.zIndex = 2;
+  requestAnimationFrame(() => target.classList.add('active'));
+}
+
+const garden = document.getElementById('garden');
+const delays = [0.1, 0.5, 0.3, 0.7, 0.2];
+const heights = ['22vh','30vh','26vh','20vh','28vh'];
+
+delays.forEach((d, i) => {
+  const stem = document.createElement('div');
+  stem.className = 'stem';
+  stem.style.height = heights[i];
+  stem.style.animationDelay = d + 's';
+
+  const leafL = document.createElement('div');
+  leafL.className = 'leaf left';
+  leafL.style.top = '50%';
+  leafL.style.animationDelay = (d+0.3)+'s';
+  stem.appendChild(leafL);
+
+  const leafR = document.createElement('div');
+  leafR.className = 'leaf right';
+  leafR.style.top = '65%';
+  leafR.style.animationDelay = (d+0.4)+'s';
+  stem.appendChild(leafR);
+
+  const flower = document.createElement('div');
+  flower.className = 'flower';
+
+  const wrap = document.createElement('div');
+  wrap.className = 'petals-wrap';
+
+  const petalCount = 14;
+  for(let p=0; p<petalCount; p++){
+    const petal = document.createElement('div');
+    petal.className = 'petal';
+    const angle = (360/petalCount)*p;
+    petal.style.setProperty('--rot', angle+'deg');
+    petal.style.animationDelay = (d + 1.5 + p*0.03) + 's';
+    wrap.appendChild(petal);
+  }
+  const petalCount2 = 10;
+  for(let p=0; p<petalCount2; p++){
+    const petal = document.createElement('div');
+    petal.className = 'petal';
+    petal.style.height='52px';
+    petal.style.width='20px';
+    const angle = (360/petalCount2)*p + 18;
+    petal.style.setProperty('--rot', angle+'deg');
+    petal.style.animationDelay = (d + 1.7 + p*0.03) + 's';
+    wrap.appendChild(petal);
+  }
+
+  const center = document.createElement('div');
+  center.className = 'center';
+  center.style.animationDelay = (d+2.1)+'s';
+
+  flower.appendChild(wrap);
+  flower.appendChild(center);
+  stem.appendChild(flower);
+
+  garden.appendChild(stem);
+});
+
+const board = document.getElementById('chessboard');
+const backRowB = ['♜','♞','♝','♛','♚','♝','♞','♜'];
+const backRowW = ['♖','♘','♗','♕','♔','♗','♘','♖'];
+
+for(let row=0; row<8; row++){
+  for(let col=0; col<8; col++){
+    const sq = document.createElement('div');
+    const isLight = (row+col)%2===0;
+    sq.className = 'sq ' + (isLight ? 'light' : 'dark');
+
+    let symbol = '';
+    let colorClass = '';
+    if(row===0){ symbol = backRowB[col]; colorClass='pb'; }
+    else if(row===1){ symbol = '♟'; colorClass='pb'; }
+    else if(row===6){ symbol = '♙'; colorClass='pw'; }
+    else if(row===7){ symbol = backRowW[col]; colorClass='pw'; }
+
+    if(symbol){
+      const piece = document.createElement('span');
+      piece.className = 'piece ' + colorClass;
+      piece.textContent = symbol;
+      sq.appendChild(piece);
+    }
+    board.appendChild(sq);
+  }
+}
+</script>
+
+</body>
+</html>
